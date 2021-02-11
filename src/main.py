@@ -44,9 +44,11 @@ async def get_all_groups():
             continue
     return groups
 
+
 async def get_participants_in_group(group):
     users = client.get_participants(group, aggressive=True)
     return users
+
 
 async def main():
     while True:
@@ -61,7 +63,7 @@ async def main():
             print(f"Enter a Number!  Not {g_index}")
             continue
 
-        target_group = groups[int(g_index)-1]
+        target_group = groups[int(g_index) - 1]
 
         print()
         print('You choose group {}'.format(target_group.title))
@@ -75,9 +77,9 @@ async def main():
 
         all_participants = await client.get_participants(target_group, aggressive=True)
 
-        file  = f"src/data/{str(target_group.title).replace(' ','_')}.csv"
-        with open(file,"w",encoding='UTF-8') as f:
-            writer = csv.writer(f,delimiter=",", lineterminator="\n")
+        file = f"src/data/{str(target_group.title).replace(' ', '_')}.csv"
+        with open(file, "w", encoding='UTF-8') as f:
+            writer = csv.writer(f, delimiter=",", lineterminator="\n")
             writer.writerow(['id', 'name', 'username', 'phone'])
             for user in all_participants:
                 if user.username:
@@ -91,11 +93,12 @@ async def main():
                 if user.last_name:
                     last_name = user.last_name
                 else:
-                    last_name= ""
-                name= (first_name + ' ' + last_name).strip()
+                    last_name = ""
+                name = (first_name + ' ' + last_name).strip()
 
                 writer.writerow([user.id, name, username, user.phone])
             print(f'Members scraped successfully to file {file}')
+
 
 if __name__ == "__main__":
     client.start(phone=myphone, max_attempts=3)

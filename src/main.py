@@ -1,13 +1,9 @@
 import configparser
 import csv
-import json
-import os
 
 from telethon import TelegramClient
-from telethon.errors import SessionPasswordNeededError
-from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.functions.messages import GetDialogsRequest
-from telethon.tl.types import ChannelParticipantsSearch, InputPeerEmpty, PeerChannel
+from telethon.tl.types import InputPeerEmpty
 
 # Reading Configs
 config = configparser.ConfigParser()
@@ -59,9 +55,6 @@ async def main():
             print(id + 1, group.title)
 
         print(0, "Exit")
-
-
-
         g_index = input("Enter a Number: ")
 
         if not g_index.isdigit():
@@ -69,6 +62,7 @@ async def main():
             continue
 
         target_group = groups[int(g_index)-1]
+
         print()
         print('You choose group {}'.format(target_group.title))
         print()
@@ -78,6 +72,7 @@ async def main():
 
         print('Fetching Members...')
         print()
+
         all_participants = await client.get_participants(target_group, aggressive=True)
 
         file  = f"src/data/{str(target_group.title).replace(' ','_')}.csv"

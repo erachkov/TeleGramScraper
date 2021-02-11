@@ -53,40 +53,54 @@ async def get_participants_in_group(group):
     return users
 
 async def main():
-    groups = await get_all_groups()
-    for id, group in enumerate(groups):
-        print(id + 1, group.title)
+    while True:
+        groups = await get_all_groups()
+        for id, group in enumerate(groups):
+            print(id + 1, group.title)
 
-    g_index = input("Enter a Number: ")
-    target_group = groups[int(g_index)-1]
-    print()
-    print('You choose group {}'.format(target_group.title))
-    print()
-    print('Fetching Members...')
-    print()
-    all_participants = await client.get_participants(target_group, aggressive=True)
+        print(0, "Exit")
 
 
-    with open(f"src/data/members_{target_group.id}.csv","w",encoding='UTF-8') as f:
-        writer = csv.writer(f,delimiter=",", lineterminator="\n")
-        writer.writerow(['id', 'name', 'username', 'phone'])
-        for user in all_participants:
-            if user.username:
-                username = user.username
-            else:
-                username = ""
-            if user.first_name:
-                first_name = user.first_name
-            else:
-                first_name = ""
-            if user.last_name:
-                last_name = user.last_name
-            else:
-                last_name= ""
-            name= (first_name + ' ' + last_name).strip()
 
-            writer.writerow([user.id, name, username, user.phone])
-        print('Members scraped successfully.')
+        g_index = input("Enter a Number: ")
+
+        if not g_index.isdigit():
+            print(f"Enter a Number!  Not {g_index}")
+            continue
+
+        target_group = groups[int(g_index)-1]
+        print()
+        print('You choose group {}'.format(target_group.title))
+        print()
+
+        if not int(g_index):
+            break
+
+        print('Fetching Members...')
+        print()
+        all_participants = await client.get_participants(target_group, aggressive=True)
+
+        file  = f"src/data/{str(target_group.title).replace(' ','_')}.csv"
+        with open(file,"w",encoding='UTF-8') as f:
+            writer = csv.writer(f,delimiter=",", lineterminator="\n")
+            writer.writerow(['id', 'name', 'username', 'phone'])
+            for user in all_participants:
+                if user.username:
+                    username = user.username
+                else:
+                    username = ""
+                if user.first_name:
+                    first_name = user.first_name
+                else:
+                    first_name = ""
+                if user.last_name:
+                    last_name = user.last_name
+                else:
+                    last_name= ""
+                name= (first_name + ' ' + last_name).strip()
+
+                writer.writerow([user.id, name, username, user.phone])
+            print(f'Members scraped successfully to file {file}')
 
 if __name__ == "__main__":
     client.start(phone=myphone, max_attempts=3)
